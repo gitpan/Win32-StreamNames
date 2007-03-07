@@ -7,6 +7,7 @@
 #include "ppport.h"
 
 /* Code for listing an Alternate Data Stream (ADS) on Microsoft Windows 2000 or later (NTFS) */
+/* Version 1.01 */
 
 MODULE = Win32::StreamNames		PACKAGE = Win32::StreamNames		
 
@@ -20,6 +21,7 @@ StreamNames(szName)
    
       HANDLE hFile;
       DWORD dwRead;
+      DWORD dwAttributes;
       WIN32_STREAM_ID StreamId = {0};
       VOID *lpContext = NULL;
       BOOL bResult;
@@ -27,7 +29,7 @@ StreamNames(szName)
       int i;
       size_t iLen = 0;
       
-      /* DEBUG
+      /* DEBUG 
       PerlIO * debug = PerlIO_open ("debug.txt", "a");
       PerlIO_printf(debug, "\nEntry, File: %s\n", szName);
       */
@@ -38,14 +40,37 @@ StreamNames(szName)
 
       /* Might be nice to allow a file handle to be passed instead of
          a name, but would that be useful?  Probably not. */
-      hFile = CreateFile (szName, GENERIC_READ, 
-                          FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+         
+      /* Version 1.01 Test file type */
+      dwAttributes = GetFileAttributes(szName);
+      
+      if (dwAttributes == INVALID_FILE_ATTRIBUTES)
+      {
+         /* Error should be in $^E */
+         XSRETURN(0);   /* Return an empty list, */
+      }
+
+      /* Version 1.01 Directory support */
+      if (dwAttributes & FILE_ATTRIBUTE_DIRECTORY)
+      {
+         /* Note FILE_FLAG_BACKUP_SEMANTICS, which is the strange
+            attribute required to get a handle to a directory.  */ 
+      
+         hFile = CreateFile (szName, FILE_LIST_DIRECTORY,
+                             FILE_SHARE_READ|FILE_SHARE_DELETE, NULL, OPEN_EXISTING,  
+                             FILE_FLAG_BACKUP_SEMANTICS, NULL);
+      }
+      else
+      {
+         hFile = CreateFile (szName, GENERIC_READ, 
+                             FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+      }
 
       if (hFile == INVALID_HANDLE_VALUE)
       {
          /* On error, CreateFile calls SetLastError, which sets $^E */
          
-         /* DEBUG
+         /* DEBUG 
          PerlIO_printf (debug, "INVALID_HANDLE_VALUE\n");
          PerlIO_close (debug);
          */
@@ -92,7 +117,6 @@ StreamNames(szName)
                                  &dw1, &dw2, &lpContext);
 
          }
-
 
          
          iLen = strlen (szStreamName);

@@ -1,4 +1,4 @@
-Win32-StreamNames version 1.00
+Win32-StreamNames version 1.01
 ==============================
 
 
@@ -31,13 +31,13 @@ To get at the stream names associated with a file requires a call
 to the BackupRead Win32 API, This module provides a simple wrapper
 to the API calls.
 
-The only externl function, StreamNames, takes a file name as
-an argument, and returns a list of stream names.  These may be
-appended to the original filename to get a fully qualified name,
+The only externl function, StreamNames, takes a file or directory 
+name as an argument, and returns a list of stream names.  These may
+be appended to the original filename to get a fully qualified name,
 which may be opened using the usual Perl functions.  
 
-If the specified file cannot be opened then $^E is set and an   
-empty list is returned.  Note that an empty list is not
+If the specified file or directory cannot be opened then $^E is set   
+and an empty list is returned.  Note that an empty list is not
 necessarily an error, since a file need not have any additional
 streams.
 
@@ -62,7 +62,7 @@ bundled with the ActiveState Perl implementation.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2005 Clive Darke
+Copyright (C) 2005, 2007 Clive Darke
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

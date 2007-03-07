@@ -4,3 +4,8 @@ Revision history for Perl extension Win32::StreamNames.
 	- original version; created by h2xs 1.23 with options
 		-cn Win32::StreamNames
 
+1.00  August 30 2005
+	First production version
+1.01  March 7 2007
+	Added directory support
+	With thanks to Geert VAN ACKER

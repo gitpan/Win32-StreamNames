@@ -3,10 +3,11 @@
 
 #########################
 
-use Test::More tests => 22;
+use Test::More tests => 25;
 use Win32API::File qw (:Func);
 use Cwd;
 
+# Version 1.01
 # Check module is there (1)
 BEGIN { use_ok('Win32::StreamNames') };
 
@@ -37,6 +38,7 @@ my $sRootPath = (split /[\\\/]/, getcwd())[0].'\\';
 my $osVolName = ' ' x 260;
 my $osFsType  = ' ' x 260;
 
+# File system type (3)
 GetVolumeInformation( $sRootPath, $osVolName, 260, [], [], [], $osFsType, 260 );
 is($osFsType, "NTFS") or diag "These tests will only run on NTFS, not $osFsType";
 
@@ -51,37 +53,37 @@ create_file ($file.':stream2');
 create_file ($file.':stream3');
 create_file ($file.':stream4');
 
-# Is the test file ok? (3 & 4)
+# Is the test file ok? (4 & 5)
 ok(-f $file, "$file exists ok");
 ok(-r $file, "$file exists ok");
 
-# Open the test file (5)
+# Open the test file (6)
 @list = StreamNames($file);
 is(0+$^E, 0, 'os error ok') or diag ("$^E: Value of \$file is: $file<<\n");
 
-# Stream names (6..9)
+# Stream names (7..10)
 for $stream (@list)
 {
    ok(open (HANDLE, $file.$stream), "Stream $file$stream ok") or diag ("$file$stream: $!");
    close HANDLE;
 }
 
-# 4 streams in this file (10)
+# 4 streams in this file (11)
 is(@list, 4, 'Number of streams') or diag ("@list");
 unlink $file;
 
-# Directory? (11, 12)
-
+# Directory? (12, 13)
+# Test changed with directory support v1.01
 @list = StreamNames('.');
-ok(!@list, 'Directory list') or diag ("@list");
-is (0+$^E, 5, 'Attempt to open a directory EPERM');
+ok(@list == 0, 'Empty directory list') or diag ("@list");
+is (0+$^E, 0, 'Attempt to open a directory');
 
-# No such file (13, 14)#
+# No such file (14, 15)
 @list = StreamNames('gash.zzz');
 ok (!@list, 'Empty list on ENOENT') or diag ("@list");
 is (0+$^E, 2, 'ENOENT');
 
-# Long file name (15, 16)
+# Long file name (16, 17)
 $file = $dir.'ThisIsAveryLongFileNameWhichGoesOnAndOn';
 create_file ($file);
 create_file ($file.':AndThisIsAlsoAVeryLongStreamNameAsWell');
@@ -91,7 +93,7 @@ is ("@list", ':AndThisIsAlsoAVeryLongStreamNameAsWell:$DATA') or diag ("@list");
 is (0+$^E, 0, 'Long one');
 unlink $file;
 
-# Embeded spaces (17, 18, 19)
+# Embeded spaces (18, 19, 20)
 $file = $dir.'Embedded space in filename';
 create_file ($file);
 create_file ($file.':Embedded space in stream name');
@@ -102,7 +104,7 @@ is (0+$^E, 0, 'Embedded space in filename, oserr') or diag ("@list\n$file");
 is ("@list", ':Embedded space in stream name:$DATA', 'Embedded space in filename, list');
 unlink $file;
 
-# No streams in file (20, 21);
+# No streams in file (21, 22);
 $file = $dir.'NoStreams.txt';
 create_file ($file);
 
@@ -111,4 +113,18 @@ ok (!@list, 'Empty list on no streams') or diag ("@list");
 is (0+$^E, 0, 'No streams, oserr') or diag ("@list\n$file");
 unlink $file;
 
+# Test for directory support (23, 24, 25)
+$testdir = $dir.'TestDir';
+mkdir $testdir || die "Unable to create $testdir: $!";
+$file = "$testdir:dirADStest";
+create_file ($file);
 
+@list = StreamNames($testdir);
+is (@list, 1, 'dirADStest, list') or diag ("File: $file, List: @list\n");
+is (0+$^E, 0, 'dir ADS test, oserr') or diag ("@list\n$file");
+is ("@list", ':dirADStest:$DATA', 'dir ADS test, list');
+
+unlink $file;
+rmdir $testdir;
+
+# End of file

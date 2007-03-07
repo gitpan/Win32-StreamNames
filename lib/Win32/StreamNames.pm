@@ -12,7 +12,7 @@ our @ISA = qw(Exporter);
 # I only have one function name, so may as well export it 
 our @EXPORT = qw( StreamNames);
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 require XSLoader;
 XSLoader::load('Win32::StreamNames', $VERSION);
@@ -60,15 +60,15 @@ To get at the stream names associated with a file requires calls
 to the BackupRead Win32 API (and a few other bits and pieces), 
 This module provides a simple wrapper to the API calls.
 
-The only external function, StreamNames, takes a file name as
-an argument, and returns a list of stream names.  These may be
-appended to the original filename to get a fully qualified name,
+The only external function, StreamNames, takes a file or directory 
+name asan argument, and returns a list of stream names.  These may
+be appended to the original filename to get a fully qualified name,
 which may be opened using the usual Perl functions.  
 
-If the specified file cannot be opened then $^E ($EXTENDED_OS_ERROR)
-is set and an empty list is returned.  Note that an empty list is 
-not necessarily an error, since a file need not have any additional
-streams.
+If the specified file or directory cannot be opened then $^E 
+($EXTENDED_OS_ERROR) is set and an empty list is returned.  Note 
+that an empty list is not necessarily an error, since a file need 
+not have any additional streams.
 
 For example:
 
@@ -110,6 +110,8 @@ Microsoft Office applications such as Word do no use additional
 data streams, but store their summary information in internal
 fields.
 
+The module now supports directory names, as well as files.
+
 =head2 EXPORT
 
 StreamNames
@@ -123,10 +125,11 @@ Win32::API provides a generic interface to APIs in kernel32.dll
 =head1 AUTHOR
 
 Clive Darke, E<lt>clive.darke@talk21.comE<gt>
+With thanks to Geert VAN ACKER for the directory suggestion
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005 by Clive Darke
+Copyright (C) 2005, 2007 by Clive Darke
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.0 or,
