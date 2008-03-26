@@ -12,7 +12,7 @@ our @ISA = qw(Exporter);
 # I only have one function name, so may as well export it 
 our @EXPORT = qw( StreamNames);
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 require XSLoader;
 XSLoader::load('Win32::StreamNames', $VERSION);

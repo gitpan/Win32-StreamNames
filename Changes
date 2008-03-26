@@ -9,3 +9,5 @@ Revision history for Perl extension Win32::StreamNames.
 1.01  March 7 2007
 	Added directory support
 	With thanks to Geert VAN ACKER
+1.02  March 26 2008
+	Changed error message for unsupported OS for CPAN testers

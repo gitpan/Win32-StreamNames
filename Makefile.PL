@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 
-die "This module will only compile on Microsoft Windows\n" if ($^O ne "MSWin32");
+die 'OS unsupported' if $^O ne 'MSWin32';
 
 WriteMakefile(
     NAME              => 'Win32::StreamNames',
