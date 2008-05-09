@@ -11,3 +11,7 @@ Revision history for Perl extension Win32::StreamNames.
 	With thanks to Geert VAN ACKER
 1.02  March 26 2008
 	Changed error message for unsupported OS for CPAN testers
+1.03  May 9 2008
+	Fixed bug where empty streams were not listed.
+	Thanks to Frederic Medico for reporting this.
+	Added test for this bug.

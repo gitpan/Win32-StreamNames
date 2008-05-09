@@ -3,7 +3,7 @@
 
 #########################
 
-use Test::More tests => 25;
+use Test::More tests => 27;
 use Win32API::File qw (:Func);
 use Cwd;
 
@@ -19,6 +19,14 @@ sub create_file ($)
    my ($file) = @_;
    open (FILE, '>', $file) or die "Unable to open $file: $!";
    print FILE "This is $file\n";
+   close FILE;
+
+}  # create_file
+
+sub create_empty_file ($)
+{
+   my ($file) = @_;
+   open (FILE, '>', $file) or die "Unable to open $file: $!";
    close FILE;
 
 }  # create_file
@@ -126,5 +134,13 @@ is ("@list", ':dirADStest:$DATA', 'dir ADS test, list');
 
 unlink $file;
 rmdir $testdir;
+
+# Empty stream file? (26,27)
+$file = $dir.'test.txt';
+create_empty_file ($file.':streamE');
+@list = StreamNames($file);
+is(0+$^E, 0, 'os error ok') or diag ("$^E: Value of \$file is: $file<<\n");
+ok(@list == 1, 'Empty stream list') or diag ("list:<@list>");
+unlink $file;
 
 # End of file

@@ -7,7 +7,8 @@
 #include "ppport.h"
 
 /* Code for listing an Alternate Data Stream (ADS) on Microsoft Windows 2000 or later (NTFS) */
-/* Version 1.01 */
+/* Version 1.03 
+   Fixed bResult test for empty file streams */
 
 MODULE = Win32::StreamNames		PACKAGE = Win32::StreamNames		
 
@@ -29,7 +30,7 @@ StreamNames(szName)
       int i;
       size_t iLen = 0;
       
-      /* DEBUG 
+      /* DEBUG
       PerlIO * debug = PerlIO_open ("debug.txt", "a");
       PerlIO_printf(debug, "\nEntry, File: %s\n", szName);
       */
@@ -105,33 +106,39 @@ StreamNames(szName)
             /* Read the stream name */
             bResult = BackupRead(hFile, (LPBYTE)wStreamName, StreamId.dwStreamNameSize, 
                                  &dwRead, FALSE, FALSE, &lpContext);
-      
+
             if (bResult && dwRead)
             {
                /* Convert from wide character */
                wcstombs( szStreamName, wStreamName, dwRead);
             }
-      
+            
             /* Move the 'pointer' on by the number of bytes read */        
             bResult = BackupSeek(hFile, StreamId.Size.LowPart, StreamId.Size.HighPart, 
                                  &dw1, &dw2, &lpContext);
 
          }
-
          
          iLen = strlen (szStreamName);
-         if (bResult && iLen)
+         
+         /* DEBUG
+         PerlIO_printf (debug, "Error: %d bResult: %d iLen: %d\n", 
+	                        GetLastError(), bResult, iLen);
+         */
+         
+         /* if (bResult && iLen) v1.03 change */
+         if (iLen)
          {  
             /* DEBUG
             PerlIO_printf (debug, "Stream found: %s\n", szStreamName);
             */
-            
 	    XPUSHs(sv_2mortal(newSVpvn (szStreamName, iLen))); 
 	    iArgs++;
 	 }
       
       } while (bResult);
       
+            
       /* Free up resources */
       bResult = BackupRead(hFile, NULL, 0, &dwRead, TRUE, FALSE, &lpContext);
       
@@ -148,9 +155,9 @@ StreamNames(szName)
          SetLastError (ERROR_SUCCESS);
       }
    
-      /* DEBUG
+      /* DEBUG   
       PerlIO_close (debug);
-      */
+      */    
       
       /* Return the list on the stack */
       XSRETURN(iArgs);

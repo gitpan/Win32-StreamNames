@@ -12,7 +12,7 @@ our @ISA = qw(Exporter);
 # I only have one function name, so may as well export it 
 our @EXPORT = qw( StreamNames);
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 require XSLoader;
 XSLoader::load('Win32::StreamNames', $VERSION);
@@ -93,7 +93,7 @@ For example:
             # Do some stuff
 
          }
-      
+
          close HANDLE;
       }
    
@@ -122,14 +122,19 @@ StreamNames
 
 Win32::API provides a generic interface to APIs in kernel32.dll
 
+=head1 BUGS
+
+Versions prior to 1.03 had a bug where empty ADS files were not listed.
+Thanks to Frederic Medico for reporting this.
+
 =head1 AUTHOR
 
-Clive Darke, E<lt>clive.darke@talk21.comE<gt>
+Clive Darke, E<lt>clive.darke @ talk21.comE<gt>
 With thanks to Geert VAN ACKER for the directory suggestion
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005, 2007 by Clive Darke
+Copyright (C) 2005, 2007, 2008 by Clive Darke
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.0 or,
