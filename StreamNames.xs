@@ -7,8 +7,8 @@
 #include "ppport.h"
 
 /* Code for listing an Alternate Data Stream (ADS) on Microsoft Windows 2000 or later (NTFS) */
-/* Version 1.03 
-   Fixed bResult test for empty file streams */
+/* Version 1.04 
+   Fixed bResult for empty file streams */
 
 MODULE = Win32::StreamNames		PACKAGE = Win32::StreamNames		
 
@@ -30,7 +30,7 @@ StreamNames(szName)
       int i;
       size_t iLen = 0;
       
-      /* DEBUG
+      /* DEBUG 
       PerlIO * debug = PerlIO_open ("debug.txt", "a");
       PerlIO_printf(debug, "\nEntry, File: %s\n", szName);
       */
@@ -121,7 +121,7 @@ StreamNames(szName)
          
          iLen = strlen (szStreamName);
          
-         /* DEBUG
+         /* DEBUG 
          PerlIO_printf (debug, "Error: %d bResult: %d iLen: %d\n", 
 	                        GetLastError(), bResult, iLen);
          */
@@ -129,11 +129,16 @@ StreamNames(szName)
          /* if (bResult && iLen) v1.03 change */
          if (iLen)
          {  
-            /* DEBUG
+            /* DEBUG 
             PerlIO_printf (debug, "Stream found: %s\n", szStreamName);
             */
+            
 	    XPUSHs(sv_2mortal(newSVpvn (szStreamName, iLen))); 
 	    iArgs++;
+	    
+	    /* v1.04 change.  
+	       bResult is set to zero with an empty file */
+	    bResult = 1;    
 	 }
       
       } while (bResult);
@@ -155,7 +160,7 @@ StreamNames(szName)
          SetLastError (ERROR_SUCCESS);
       }
    
-      /* DEBUG   
+      /* DEBUG  
       PerlIO_close (debug);
       */    
       

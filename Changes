@@ -15,3 +15,6 @@ Revision history for Perl extension Win32::StreamNames.
 	Fixed bug where empty streams were not listed.
 	Thanks to Frederic Medico for reporting this.
 	Added test for this bug.
+1.04  January 13 2009
+	Similar bug to 1.03, again reported by Frederic Medico
+	This time an empty stream terminated a list

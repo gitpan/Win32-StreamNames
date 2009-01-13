@@ -12,7 +12,7 @@ our @ISA = qw(Exporter);
 # I only have one function name, so may as well export it 
 our @EXPORT = qw( StreamNames);
 
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 require XSLoader;
 XSLoader::load('Win32::StreamNames', $VERSION);
@@ -61,7 +61,7 @@ to the BackupRead Win32 API (and a few other bits and pieces),
 This module provides a simple wrapper to the API calls.
 
 The only external function, StreamNames, takes a file or directory 
-name asan argument, and returns a list of stream names.  These may
+name as an argument, and returns a list of stream names.  These may
 be appended to the original filename to get a fully qualified name,
 which may be opened using the usual Perl functions.  
 
@@ -125,7 +125,8 @@ Win32::API provides a generic interface to APIs in kernel32.dll
 =head1 BUGS
 
 Versions prior to 1.03 had a bug where empty ADS files were not listed.
-Thanks to Frederic Medico for reporting this.
+Versions prior to 1.04 had a bug where empty ADS files terminated the list.
+Thanks to Frederic Medico for reporting these.
 
 =head1 AUTHOR
 
@@ -134,7 +135,7 @@ With thanks to Geert VAN ACKER for the directory suggestion
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005, 2007, 2008 by Clive Darke
+Copyright (C) 2005, 2007, 2008, 2009 by Clive Darke
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.0 or,

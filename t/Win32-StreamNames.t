@@ -2,12 +2,14 @@
 # `make test'. After `make install' it should work as `perl Win32-StreamNames.t'
 
 #########################
+use warnings;
+use strict;
 
-use Test::More tests => 27;
+use Test::More tests => 29;
 use Win32API::File qw (:Func);
 use Cwd;
 
-# Version 1.01
+# Version 1.04
 # Check module is there (1)
 BEGIN { use_ok('Win32::StreamNames') };
 
@@ -40,7 +42,6 @@ is($^O, 'MSWin32', 'OS is Windows');
 my $dir = $0;
 $dir =~ s/([\/\\]).*$/$1/;
 
-
 # NTFS ??
 my $sRootPath = (split /[\\\/]/, getcwd())[0].'\\';
 my $osVolName = ' ' x 260;
@@ -48,12 +49,13 @@ my $osFsType  = ' ' x 260;
 
 # File system type (3)
 GetVolumeInformation( $sRootPath, $osVolName, 260, [], [], [], $osFsType, 260 );
-is($osFsType, "NTFS") or diag "These tests will only run on NTFS, not $osFsType";
+is($osFsType, "NTFS") or diag "File system $osFsType unsupported";
 
 # Prepare for testing
 $^E = 0;
 
 my $file = $dir.'test.txt';
+my @list;
 
 create_file ($file);
 create_file ($file.':stream1');
@@ -70,7 +72,7 @@ ok(-r $file, "$file exists ok");
 is(0+$^E, 0, 'os error ok') or diag ("$^E: Value of \$file is: $file<<\n");
 
 # Stream names (7..10)
-for $stream (@list)
+for my $stream (@list)
 {
    ok(open (HANDLE, $file.$stream), "Stream $file$stream ok") or diag ("$file$stream: $!");
    close HANDLE;
@@ -122,7 +124,7 @@ is (0+$^E, 0, 'No streams, oserr') or diag ("@list\n$file");
 unlink $file;
 
 # Test for directory support (23, 24, 25)
-$testdir = $dir.'TestDir';
+my $testdir = $dir.'TestDir';
 mkdir $testdir || die "Unable to create $testdir: $!";
 $file = "$testdir:dirADStest";
 create_file ($file);
@@ -133,7 +135,6 @@ is (0+$^E, 0, 'dir ADS test, oserr') or diag ("@list\n$file");
 is ("@list", ':dirADStest:$DATA', 'dir ADS test, list');
 
 unlink $file;
-rmdir $testdir;
 
 # Empty stream file? (26,27)
 $file = $dir.'test.txt';
@@ -143,4 +144,19 @@ is(0+$^E, 0, 'os error ok') or diag ("$^E: Value of \$file is: $file<<\n");
 ok(@list == 1, 'Empty stream list') or diag ("list:<@list>");
 unlink $file;
 
+# Empty stream file within a list of data files (28,29)
+my $file1 = "$testdir:dirADStest.name1";
+create_file ($file1);
+my $file2 = "$testdir:dirADStest1.name2";
+create_empty_file ($file2);
+my $file3 = "$testdir:dirADStest2.name3";
+create_file ($file3);
+my $file4 = "$testdir:dirADStest3.name4";
+create_file ($file4);
+@list = StreamNames($testdir);
+is(0+$^E, 0, 'os error ok') or diag ("$^E: Value of \$file is: $file<<\n");
+ok(@list == 5, 'Mixed stream list') or diag ("list:<@list>");
+
+unlink ($file1, $file2, $file2, $file4);
+rmdir $testdir;
 # End of file

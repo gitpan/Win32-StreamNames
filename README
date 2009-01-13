@@ -1,4 +1,4 @@
-Win32-StreamNames version 1.01
+Win32-StreamNames version 1.04
 ==============================
 
 
@@ -46,9 +46,12 @@ INSTALLATION
 To install this module type the following:
 
    perl Makefile.PL
-   make
-   make test
-   make install
+   nmake
+   nmake test
+   nmake install
+
+   If using the GNU toolset (for example with Strawberry Perl), 
+   use dmake instead of nmake.
 
 DEPENDENCIES
 
@@ -62,7 +65,7 @@ bundled with the ActiveState Perl implementation.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2005, 2007 Clive Darke
+Copyright (C) 2005, 2007, 2009 Clive Darke
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
